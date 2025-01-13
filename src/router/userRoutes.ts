@@ -13,18 +13,13 @@ const userSchema = z.object({
     password: z.string().max(20)
 })
 
-
-
 router.post('/signup', async (req, res) => {
 
     const parsedInput = userSchema.safeParse(req.body)
     if (!parsedInput.success) {
-        console.log(parsedInput.error)
         res.status(411).json({ message: "There is an error while parsing user credentials" })
         return;
     }
-
-
     try {
         const username = parsedInput.data?.username;
         const email = parsedInput.data?.email;
@@ -38,11 +33,17 @@ router.post('/signup', async (req, res) => {
                 password: hashedPassword
             }
         })
-
-        res.status(201).send({ message: "You signup successfully!" })
+        const token = jwt.sign(user, SpecialKeys.SECRET_KEY, { expiresIn: "7d" })
+        if (token)
+        {
+            res.status(201).json({ message: "Successfully signed up", token })
+            return
+        }
+        res.status(400).send({ message: "Signup fails" })
 
     } catch (error) {
-        console.log(error)
+        
+        res.status(409).json({message:"May be duplicate data in the table",error})
     }
 })
 
@@ -65,10 +66,8 @@ router.post("/login", async (req, res) => {
         if (token)
         {
             res.json({message:"Logged in",token})
-        }
-        
+        }   
     }
-
 })
 
 
