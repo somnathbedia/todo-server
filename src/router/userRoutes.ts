@@ -6,6 +6,7 @@ import argon2 from "argon2"
 import jwt from "jsonwebtoken"
 const prisma = new PrismaClient()
 import { SpecialKeys } from "../configs/config";
+import { AuthenticatedRequest, authenticateJwt } from "../auth/authenticator";
 
 const userSchema = z.object({
     username: z.string().min(3).max(15),
@@ -36,7 +37,7 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign(user, SpecialKeys.SECRET_KEY, { expiresIn: "7d" })
         if (token)
         {
-            res.status(201).json({ message: "Successfully signed up", token })
+            res.status(201).json({ message: "Successfully signed up", user,token })
             return
         }
         res.status(400).send({ message: "Signup fails" })
@@ -65,8 +66,29 @@ router.post("/login", async (req, res) => {
         const token = jwt.sign(user, SpecialKeys.SECRET_KEY, { expiresIn: "7d" })
         if (token)
         {
-            res.json({message:"Logged in",token})
+            res.cookie('jwt', token, { 
+                httpOnly: true, 
+                secure: true, 
+                sameSite: 'strict' 
+            });
+            res.json({message:"Logged in",token,user})
         }   
+    }
+})
+
+router.get('/username', authenticateJwt, async (req: AuthenticatedRequest, res) => {
+    
+    try {
+        const { ...u } = req.user;
+        const user = await prisma.user.findUnique({
+            where: {
+              email:u.email  
+            }
+        })
+
+        res.json({username:user?.username})
+    } catch (error) {
+        console.log(error)
     }
 })
 

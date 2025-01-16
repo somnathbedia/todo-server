@@ -11,7 +11,7 @@ app.use(cors())
 app.use(bodyParser.json())
 
 app.use('/users', userRoutes)
-app.use("/todo",todoRoutes)
+app.use("/todo", todoRoutes)
 
 app.listen(SpecialKeys.PORT, () => {
     console.log(`Todo server is Active at port ${SpecialKeys.PORT}`)

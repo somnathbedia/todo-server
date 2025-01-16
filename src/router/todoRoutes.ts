@@ -10,13 +10,18 @@ const TodoSchema = z.object({
 })
 
 
-router.get("/todos", authenticateJwt, async (req:Request, res:Response) => {
-    const todos = await prisma.todo.findMany()
+router.get("/todos", authenticateJwt, async (req: AuthenticatedRequest, res: Response) => {
+    const {...user} = req.user
+    const todos = await prisma.todo.findMany({
+        where: {
+            userId:user.id
+        }
+    })
     if (todos.length > 0) {
         res.json({ todos })
         return;
     }
-    res.status(204).json({ message: "Not found",todos })
+    res.status(200).json({ message: "Not found",todos })
 })
 
 router.post('/todos', authenticateJwt, async (req: AuthenticatedRequest, res: Response) => {
@@ -48,13 +53,13 @@ router.post('/todos', authenticateJwt, async (req: AuthenticatedRequest, res: Re
 
 router.put("/todos/:id", authenticateJwt, async (req, res) => {
     const { id } = req.params
-    const { isCompleted } = req.body
+
     const todo = await prisma.todo.update({
         where: {
             id,
         },
         data: {
-            isCompleted:isCompleted
+            isCompleted:!false
         }
     })
     res.json({message:"Task Completed", todo })
