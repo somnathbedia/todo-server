@@ -23,7 +23,7 @@ export const authenticateJwt = (req:AuthenticatedRequest, res: Response, next: N
     const authHeader = req.headers.authorization;
     if (authHeader) {
         const token = authHeader.split(' ')[1];
-        jwt.verify(token, SpecialKeys.SECRET_KEY, (err, user) => {
+        jwt.verify(token, SpecialKeys.SECRET_KEY, (err: Error | null, user ) => {
             if (err) {
                 return res.sendStatus(403);
             }
