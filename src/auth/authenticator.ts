@@ -12,6 +12,10 @@ export interface JwtPayload {
 
 export interface AuthenticatedRequest extends Request {
     user?: JwtPayload; 
+    headers: {
+        authorization?: string;
+      };
+      body: any; 
 }
 
 export const authenticateJwt = (req:AuthenticatedRequest, res: Response, next: NextFunction) => {

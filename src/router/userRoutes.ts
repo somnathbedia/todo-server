@@ -14,7 +14,7 @@ const userSchema = z.object({
     password: z.string().max(20)
 })
 
-router.post('/signup', async (req, res) => {
+router.post('/signup', async (req:express.Request,res:express.Response) => {
 
     const parsedInput = userSchema.safeParse(req.body)
     if (!parsedInput.success) {
@@ -48,7 +48,7 @@ router.post('/signup', async (req, res) => {
     }
 })
 
-router.post("/login", async (req, res) => {
+router.post("/login", async (req:express.Request, res:express.Response) => {
     const { email, password } = req.body;
     const user = await prisma.user.findUnique({
         where: {
@@ -76,7 +76,7 @@ router.post("/login", async (req, res) => {
     }
 })
 
-router.get('/username', authenticateJwt, async (req: AuthenticatedRequest, res) => {
+router.get('/username', authenticateJwt, async (req: AuthenticatedRequest, res:express.Response) => {
     
     try {
         const { ...u } = req.user;

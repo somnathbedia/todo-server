@@ -51,7 +51,7 @@ router.post('/todos', authenticateJwt, async (req: AuthenticatedRequest, res: Re
     
 })
 
-router.put("/todos/:id", authenticateJwt, async (req, res) => {
+router.put("/todos/:id", authenticateJwt, async (req:Request, res:Response) => {
     const { id } = req.params
 
     const todo = await prisma.todo.update({
@@ -66,7 +66,7 @@ router.put("/todos/:id", authenticateJwt, async (req, res) => {
 })
 
 
-router.delete("/todos/:id", authenticateJwt, async (req, res) => {
+router.delete("/todos/:id", authenticateJwt, async (req:Request, res:Response) => {
     const { id } = req.params
     const deltedTodo = await prisma.todo.delete({
         where: {
